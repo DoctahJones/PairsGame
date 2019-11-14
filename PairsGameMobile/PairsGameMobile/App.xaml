@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Application xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             x:Class="PairsGameMobile.App">
+    <Application.Resources>
+        <ResourceDictionary>
+            <!-- Application resource dictionary -->
+            <Color x:Key="Primary">#808080</Color>
+            <Color x:Key="PrimaryDark">#444141</Color>
+            <Color x:Key="Accent">#00BCD4</Color>
+            <Color x:Key="TextColor">#FFFFFF</Color>
+        </ResourceDictionary>
+        <Style x:Key="ButtonOutline" TargetType="Button">
+            <Setter Property="BackgroundColor" Value="Transparent"/>
+            <Setter Property="TextColor" Value="{StaticResource Primary}"/>
+            <Setter Property="BorderColor" Value="{StaticResource Primary}"/>
+            <Setter Property="BorderWidth" Value="1"/>
+            <Setter Property="Margin" Value="5" />
+        </Style>
+    </Application.Resources>
+</Application>

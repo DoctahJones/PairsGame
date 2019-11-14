@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms" 
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:localImage="clr-namespace:PairsGameMobile.Helper"
+             mc:Ignorable="d"
+             xmlns:viewmodel="clr-namespace:PairsGameMobile.ViewModel"
+             x:Class="PairsGameMobile.View.MainPage"
+             Title="{Binding Title}"
+             BackgroundColor="{StaticResource Primary}">
+
+    <ContentPage.BindingContext>
+        <viewmodel:GameBrowserViewModel />
+    </ContentPage.BindingContext>
+
+    <ContentPage.Content>
+        <StackLayout>
+            <ListView ItemsSource="{Binding GameDetails}"
+                      ItemSelected="ListView_ItemSelected"
+                      SeparatorColor="{StaticResource Accent}"
+                  CachingStrategy="RecycleElement"
+                  HasUnevenRows="True">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <Grid ColumnSpacing="10" Padding="10">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="40"></RowDefinition>
+                                    <RowDefinition Height="*" ></RowDefinition>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="40"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Image Source="{Binding GameIcon}"
+                                    HorizontalOptions="Center"
+                                    VerticalOptions="Center"
+                                    WidthRequest="50"
+                                    HeightRequest="50"
+                                    Aspect="AspectFill"/>
+                                
+                                <StackLayout Grid.Column="1" VerticalOptions="Center">
+                                    <Label Text="{Binding Name}" FontSize="Medium" TextColor="{StaticResource TextColor}"/>
+                                </StackLayout>
+                                <Label Grid.Row="1" Grid.ColumnSpan="2" Text="{Binding Description}" TextColor="{StaticResource TextColor}"  />
+                            </Grid>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+                
+            </ListView>
+            <Label Text="butts" />
+        </StackLayout>
+
+    </ContentPage.Content>
+</ContentPage>
