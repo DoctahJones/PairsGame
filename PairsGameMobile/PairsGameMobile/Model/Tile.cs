@@ -1,17 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Text;
 using Xamarin.Forms;
 
 namespace PairsGameMobile.Model
 {
-    public class Tile
+    [DebuggerDisplay("{TileFront} shown={FrontShown}")]
+    public class Tile : INotifyPropertyChanged
     {
         public string TileBack { get; set; }
 
         public string TileFront { get; set; }
 
-        public bool FrontShown { get; set; }
+
+        private bool frontShown;
+        public bool FrontShown
+        {
+            get => frontShown;
+            set
+            {
+                if (value == frontShown)
+                {
+                    return;
+                }
+                frontShown = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(CurrentImage));
+            }
+        }
 
         public TileType TileType { get; set; }
 
@@ -19,12 +38,19 @@ namespace PairsGameMobile.Model
         {
             get
             {
-                return FrontShown ? TileFront : TileBack;
+                return frontShown ? TileFront : TileBack;
             }
         }
 
         public Tile()
         {
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public void OnPropertyChanged([CallerMemberName] string name = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
     }
 

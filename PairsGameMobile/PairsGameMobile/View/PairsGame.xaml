@@ -19,7 +19,8 @@
 
     <ContentPage.Content>
         <CollectionView ItemsSource="{Binding PairsTileItems}"
-                        SelectionMode="Single" 
+                        SelectionMode="Single"
+                        SelectedItem="{Binding SelectedTile}"
                         SelectionChangedCommand="{Binding SelectedTileChangedCommand}" 
                         ItemSizingStrategy="MeasureFirstItem"
                         SizeChanged="CollectionView_SizeChanged">

@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
 using Xamarin.Forms;
 
 namespace PairsGameMobile.ViewModel
@@ -28,6 +27,11 @@ namespace PairsGameMobile.ViewModel
 
         public Command SelectedTileChangedCommand { get; }
 
+        /// <summary>
+        /// Generates a random number greater than or equal to 0 but LESS THAN (not including) the passed in int.
+        /// </summary>
+        public Func<int, int> RandomNumberGenerator { get; set; }
+
         private Tile selectedTile;
         public Tile SelectedTile
         {
@@ -43,9 +47,8 @@ namespace PairsGameMobile.ViewModel
             }
         }
 
-        public PairsGameViewModel(): this(new XamarinDependencyService())
+        public PairsGameViewModel() : this(new XamarinDependencyService())
         {
-
         }
 
         public PairsGameViewModel(IDependencyService depService)
@@ -61,6 +64,8 @@ namespace PairsGameMobile.ViewModel
             TileImageSetFetcher = dependencyService.Get<IImageSetFetcher>();
             FillTilesCollectionWithTiles(8, TileImageSetFetcher.GetImageFileNames(8).ToList());
 
+
+            RandomNumberGenerator = new Random().Next;
             NewGameCommand = new Command(() => NewGame());
             SelectedTileChangedCommand = new Command(() => SelectionItemChanged());
         }
@@ -77,10 +82,20 @@ namespace PairsGameMobile.ViewModel
             {
                 PairsTileItems.Add(new Tile
                 {
-                    FrontShown = true,
+                    FrontShown = false,
                     TileBack = "turtleshell.jpg",
                     TileFront = imageNames[i / 2]
                 });
+            }
+        }
+
+        public void HideExistingTilesAndShuffle()
+        {
+            int itemsInList = PairsTileItems.Count;
+            for (int i = 0; i < itemsInList; i++)
+            {
+                PairsTileItems.Move(i + RandomNumberGenerator(itemsInList - i), i);
+                PairsTileItems[i].FrontShown = false;
             }
         }
 
@@ -91,8 +106,12 @@ namespace PairsGameMobile.ViewModel
                 return;
             }
             IsBusy = true;
-
-            //dostuff
+            if(SelectedTile != null)
+            {
+                SelectedTile.FrontShown = !SelectedTile.FrontShown;
+                SelectedTile = null;
+            }
+            
 
 
             IsBusy = false;
