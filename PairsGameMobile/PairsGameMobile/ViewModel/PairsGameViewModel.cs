@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 using Xamarin.Forms;
 
 namespace PairsGameMobile.ViewModel
@@ -64,8 +65,9 @@ namespace PairsGameMobile.ViewModel
             TileImageSetFetcher = dependencyService.Get<IImageSetFetcher>();
             FillTilesCollectionWithTiles(8, TileImageSetFetcher.GetImageFileNames(8).ToList());
 
-
             RandomNumberGenerator = new Random().Next;
+            HideExistingTilesAndShuffle();
+
             NewGameCommand = new Command(() => NewGame());
             SelectedTileChangedCommand = new Command(() => SelectionItemChanged());
         }
@@ -99,25 +101,94 @@ namespace PairsGameMobile.ViewModel
             }
         }
 
-        public void SelectionItemChanged()
+        public async void SelectionItemChanged()
         {
-            if (IsBusy)
+            if (IsBusy || SelectedTile?.FrontShown == true)
             {
+                SelectedTile = null;
                 return;
             }
             IsBusy = true;
-            if(SelectedTile != null)
+            if (SelectedTile != null)
             {
-                SelectedTile.FrontShown = !SelectedTile.FrontShown;
+                var selected = SelectedTile;
                 SelectedTile = null;
+                selected.FrontShown = !selected.FrontShown;
+
+                if (currentlySelectedItems[0] == null) //first of pair
+                {
+                    currentlySelectedItems[0] = selected;
+                }
+                else //second of pair
+                {
+                    currentlySelectedItems[1] = selected;
+                    await HandlePairOfCards();
+                }
+                
             }
-            
-
-
             IsBusy = false;
         }
 
+        private async Task HandlePairOfCards()
+        {
+            bool correctPair = CheckIfTilesAreOfSameType(currentlySelectedItems);
+            if (correctPair)
+            {
+                if (CheckIfAllTilesDisplayed())
+                {
+                    GameWon();
+                }
+                else
+                {
+                    currentlySelectedItems[0] = currentlySelectedItems[1] = null;
+                }
+            }
+            else
+            {
+                await Task.Delay(delayToShowNonPairMilliseconds); //delay so user can see the pair are not matched.
+                foreach (var currTile in currentlySelectedItems)
+                {
+                    currTile.FrontShown = false;
+                }
+                currentlySelectedItems[0] = currentlySelectedItems[1] = null;
+            }
+        }
+
+        private bool CheckIfTilesAreOfSameType(Tile[] tiles)
+        {
+            if(tiles.Length < 2)
+            {
+                return true;
+            }
+            Tile first = tiles[0];
+            for(int i = 1; i < tiles.Length; i++)
+            {
+                if (!String.Equals(tiles[i].TileFront, first.TileFront))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public bool CheckIfAllTilesDisplayed()
+        {
+            foreach(var currTile in PairsTileItems)
+            {
+                if(!currTile.FrontShown)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
         public void NewGame()
+        {
+            
+        }
+
+        public void GameWon()
         {
 
         }

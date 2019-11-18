@@ -32,15 +32,12 @@ namespace PairsGameMobile.Model
             }
         }
 
-        public TileType TileType { get; set; }
-
         public string CurrentImage
         {
-            get
-            {
-                return frontShown ? TileFront : TileBack;
-            }
+            get => frontShown ? TileFront : TileBack;
         }
+
+        public TileType TileType { get; set; }
 
         public Tile()
         {
