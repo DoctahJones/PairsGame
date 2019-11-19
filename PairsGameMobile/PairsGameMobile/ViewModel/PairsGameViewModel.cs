@@ -13,12 +13,12 @@ namespace PairsGameMobile.ViewModel
     {
         private readonly IDependencyService dependencyService;
 
+        private readonly Tile[] currentlySelectedItems;
+
         /// <summary>
         /// The length of time to display the tiles to the user before 
         /// </summary>
-        private int delayToShowNonPairMilliseconds;
-
-        private Tile[] currentlySelectedItems;
+        public int DelayToShowNonPairMilliseconds { get; set; }
 
         public IImageSetFetcher TileImageSetFetcher { get; set; }
 
@@ -48,6 +48,21 @@ namespace PairsGameMobile.ViewModel
             }
         }
 
+        private bool playerWon = false;
+        public bool PlayerWon
+        {
+            get => playerWon;
+            set
+            {
+                if (playerWon == value)
+                {
+                    return;
+                }
+                playerWon = value;
+                OnPropertyChanged();
+            }
+        }
+
         public PairsGameViewModel() : this(new XamarinDependencyService())
         {
         }
@@ -59,7 +74,7 @@ namespace PairsGameMobile.ViewModel
             Title = "Pairs";
             PairsTileItems = new ObservableCollection<Tile>();
 
-            delayToShowNonPairMilliseconds = 1000;
+            DelayToShowNonPairMilliseconds = 1000;
             currentlySelectedItems = new Tile[2];
 
             TileImageSetFetcher = dependencyService.Get<IImageSetFetcher>();
@@ -69,7 +84,7 @@ namespace PairsGameMobile.ViewModel
             HideExistingTilesAndShuffle();
 
             NewGameCommand = new Command(() => NewGame());
-            SelectedTileChangedCommand = new Command(() => SelectionItemChanged());
+            SelectedTileChangedCommand = new Command(async () => await SelectionItemChangedAsync());
         }
 
 
@@ -101,7 +116,7 @@ namespace PairsGameMobile.ViewModel
             }
         }
 
-        public async void SelectionItemChanged()
+        public async Task SelectionItemChangedAsync()
         {
             if (IsBusy || SelectedTile?.FrontShown == true)
             {
@@ -113,7 +128,7 @@ namespace PairsGameMobile.ViewModel
             {
                 var selected = SelectedTile;
                 SelectedTile = null;
-                selected.FrontShown = !selected.FrontShown;
+                selected.FrontShown = true;
 
                 if (currentlySelectedItems[0] == null) //first of pair
                 {
@@ -122,14 +137,13 @@ namespace PairsGameMobile.ViewModel
                 else //second of pair
                 {
                     currentlySelectedItems[1] = selected;
-                    await HandlePairOfCards();
+                    await HandlePairOfCardsAsync();
                 }
-                
             }
             IsBusy = false;
         }
 
-        private async Task HandlePairOfCards()
+        private async Task HandlePairOfCardsAsync()
         {
             bool correctPair = CheckIfTilesAreOfSameType(currentlySelectedItems);
             if (correctPair)
@@ -140,28 +154,28 @@ namespace PairsGameMobile.ViewModel
                 }
                 else
                 {
-                    currentlySelectedItems[0] = currentlySelectedItems[1] = null;
+                    ClearCurrentlySelectedItems();
                 }
             }
             else
             {
-                await Task.Delay(delayToShowNonPairMilliseconds); //delay so user can see the pair are not matched.
+                await Task.Delay(DelayToShowNonPairMilliseconds); //delay so user can see the pair are not matched.
                 foreach (var currTile in currentlySelectedItems)
                 {
                     currTile.FrontShown = false;
                 }
-                currentlySelectedItems[0] = currentlySelectedItems[1] = null;
+                ClearCurrentlySelectedItems();
             }
         }
 
         private bool CheckIfTilesAreOfSameType(Tile[] tiles)
         {
-            if(tiles.Length < 2)
+            if (tiles.Length < 2)
             {
                 return true;
             }
             Tile first = tiles[0];
-            for(int i = 1; i < tiles.Length; i++)
+            for (int i = 1; i < tiles.Length; i++)
             {
                 if (!String.Equals(tiles[i].TileFront, first.TileFront))
                 {
@@ -171,11 +185,15 @@ namespace PairsGameMobile.ViewModel
             return true;
         }
 
-        public bool CheckIfAllTilesDisplayed()
+        /// <summary>
+        /// Checks if all the tiles in the collection are being displayed at the moment.
+        /// </summary>
+        /// <returns>True if all tiles are displayed.</returns>
+        private bool CheckIfAllTilesDisplayed()
         {
-            foreach(var currTile in PairsTileItems)
+            foreach (var currTile in PairsTileItems)
             {
-                if(!currTile.FrontShown)
+                if (!currTile.FrontShown)
                 {
                     return false;
                 }
@@ -185,12 +203,25 @@ namespace PairsGameMobile.ViewModel
 
         public void NewGame()
         {
-            
+            if (IsBusy)
+            {
+                return;
+            }
+            IsBusy = true;
+            ClearCurrentlySelectedItems();
+            HideExistingTilesAndShuffle();
+            PlayerWon = false;
+            IsBusy = false;
+        }
+
+        private void ClearCurrentlySelectedItems()
+        {
+            this.currentlySelectedItems[0] = this.currentlySelectedItems[1] = null;
         }
 
         public void GameWon()
         {
-
+            this.PlayerWon = true;
         }
 
     }

@@ -20,33 +20,14 @@ namespace PairsGameMobile.View
 
         private void CollectionView_SizeChanged(object sender, EventArgs e)
         {
-            //todo possible make margins between rows resize dynamically so it fulls more of the screen.
-
-            //Layout layout = sender as Layout;
-
-            //cols = (int)Math.Round(layout.Width / MaxCellSize);
-            //rows = (int)Math.Round(layout.Height / MaxCellSize);
-
-            //if (cols * rows > MaxCellCount)
-            //{
-            //    cellSize = (int)Math.Sqrt((layout.Width * layout.Height) / MaxCellCount);
-            //    cols = (int)(layout.Width / cellSize);
-            //    rows = (int)(layout.Height / cellSize);
-            //}
-            //else
-            //{
-            //    cellSize = (int)Math.Min(layout.Width / cols, layout.Height / rows);
-            //}
-
-            //xMargin = (int)((layout.Width - cols * cellSize) / 2);
-            //yMargin = (int)((layout.Height - rows * cellSize) / 2);
-
-            //if (cols > 0 && rows > 0)
-            //{
-            //    lifeGrid.SetSize(cols, rows);
-            //    UpdateLayout();
-            //    UpdateLives();
-            //}
+            CollectionView view = sender as CollectionView;
+            var margin = view.Margin.Top + view.Margin.Bottom;
+            double extraHeight = (view.Height - margin) - view.Width;
+            if (extraHeight > 0)
+            {
+                GridLayout.VerticalItemSpacing = extraHeight / 4.5; //a bit more than 4(for 3 row gaps + bottom) to give some extra breathing room.
+            }
         }
+
     }
 }

@@ -16,6 +16,7 @@
 
     <ContentPage.Content>
         <StackLayout>
+
             <ListView ItemsSource="{Binding GameDetails}"
                       ItemSelected="ListView_ItemSelected"
                       SeparatorColor="{StaticResource Accent}"
@@ -39,7 +40,7 @@
                                     WidthRequest="50"
                                     HeightRequest="50"
                                     Aspect="AspectFill"/>
-                                
+
                                 <StackLayout Grid.Column="1" VerticalOptions="Center">
                                     <Label Text="{Binding Name}" FontSize="Medium" TextColor="{StaticResource TextColor}"/>
                                 </StackLayout>
@@ -48,10 +49,8 @@
                         </ViewCell>
                     </DataTemplate>
                 </ListView.ItemTemplate>
-                
             </ListView>
-            <Label Text="butts" />
-        </StackLayout>
 
+        </StackLayout>
     </ContentPage.Content>
 </ContentPage>

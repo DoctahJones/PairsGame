@@ -37,8 +37,6 @@ namespace PairsGameMobile.Model
             get => frontShown ? TileFront : TileBack;
         }
 
-        public TileType TileType { get; set; }
-
         public Tile()
         {
         }
@@ -49,11 +47,6 @@ namespace PairsGameMobile.Model
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
-    }
-
-    public enum TileType
-    {
-        VALKYR, PURPLEORB, REDORB, WAND, TURTLE, MECH, CRAB, FOSSIL
     }
 
 }
